@@ -8,38 +8,37 @@
 
   <style>
     :root{
-      /* base */
-      --bg: #0a0b10;
+      /* Apple-ish calm palette */
+      --bg: #0b0c10;
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.66);
       --faint: rgba(255,255,255,0.45);
 
-      --surface: rgba(255,255,255,0.06);
-      --surface-strong: rgba(255,255,255,0.10);
-      --surface-soft: rgba(255,255,255,0.045);
+      --surface: rgba(255,255,255,0.055);
+      --surface-strong: rgba(255,255,255,0.085);
+      --surface-soft: rgba(255,255,255,0.040);
+
       --line: rgba(255,255,255,0.10);
       --line-strong: rgba(255,255,255,0.16);
 
-      /* accents */
-      --blue: #4aa3ff;
-      --cyan: #6ef3ff;
-      --pink: #ff5bd6;
-      --gold: #ffd37a;
-      --green: #44f1a6;
-
-      /* radii & shadow */
-      --radius-lg: 26px;
-      --radius: 18px;
-      --radius-sm: 14px;
+      /* subtle accent (not neon) */
+      --accent: #0a84ff;     /* Apple-ish blue */
+      --accent2: #64d2ff;    /* Apple-ish cyan */
+      --good: #30d158;       /* Apple-ish green */
 
       --shadow: 0 18px 60px rgba(0,0,0,0.55);
       --shadow-sm: 0 10px 28px rgba(0,0,0,0.35);
 
-      /* layout */
+      --radius-lg: 26px;
+      --radius: 18px;
+      --radius-sm: 14px;
+
       --max: 980px;
 
       --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
               "PingFang SC","Helvetica Neue","Noto Sans SC", Arial, sans-serif;
+
+      --ease: cubic-bezier(.2,.8,.2,1);
     }
 
     @media (prefers-color-scheme: light){
@@ -52,17 +51,16 @@
         --surface: rgba(255,255,255,0.78);
         --surface-strong: rgba(255,255,255,0.92);
         --surface-soft: rgba(255,255,255,0.70);
+
         --line: rgba(0,0,0,0.08);
         --line-strong: rgba(0,0,0,0.12);
 
         --shadow: 0 18px 60px rgba(0,0,0,0.10);
         --shadow-sm: 0 10px 30px rgba(0,0,0,0.08);
 
-        --blue: #007aff;
-        --cyan: #00c7d6;
-        --pink: #ff2d95;
-        --gold: #ffb020;
-        --green: #34c759;
+        --accent: #007aff;
+        --accent2: #32ade6;
+        --good: #34c759;
       }
     }
 
@@ -70,175 +68,113 @@
     html,body{ height:100%; }
     html{ scroll-behavior:smooth; }
     body{
-      color: var(--text);
       background: var(--bg);
+      color: var(--text);
+      line-height: 1.72;
       overflow-x:hidden;
-      line-height:1.72;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
 
     a{ color: inherit; text-decoration:none; }
-    a:hover{ text-decoration: none; }
+    a:hover{ text-decoration:none; }
 
-    /* subtle link underline */
-    .link{
-      position: relative;
-      display:inline-block;
-      color: inherit;
+    :focus-visible{
+      outline: 2px solid rgba(10,132,255,0.55);
+      outline-offset: 2px;
+      border-radius: 10px;
     }
-    .link::after{
-      content:"";
-      position:absolute;
-      left:0; right:0;
-      bottom:-2px;
-      height:1px;
-      background: linear-gradient(90deg, rgba(110,243,255,0.0), rgba(110,243,255,0.45), rgba(255,91,214,0.35), rgba(110,243,255,0.0));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .22s ease;
-      opacity:.9;
-      pointer-events:none;
-    }
-    .link:hover::after{ transform: scaleX(1); }
 
-    /* =========================
-       Background (soft, elegant)
-       ========================= */
+    /* ============== Background (calm, refined) ============== */
     .bg{
       position: fixed;
-      inset: 0;
-      z-index: -2;
-      overflow:hidden;
+      inset:0;
+      z-index:-2;
       pointer-events:none;
+      overflow:hidden;
     }
 
     .blob{
       position:absolute;
-      width: 560px;
-      height: 560px;
+      width: 620px;
+      height: 620px;
       border-radius: 50%;
-      filter: blur(52px);
-      opacity: 0.42;
-      transform: translate3d(0,0,0);
-      animation: float 16s ease-in-out infinite;
+      filter: blur(60px);
+      opacity: 0.28;
+      animation: float 18s var(--ease) infinite;
       will-change: transform;
     }
     .b1{
-      background: radial-gradient(circle at 30% 30%, rgba(74,163,255,0.85), transparent 62%);
-      left:-200px;
-      top:-220px;
+      left:-240px; top:-260px;
+      background: radial-gradient(circle at 30% 30%, rgba(10,132,255,0.75), transparent 62%);
     }
     .b2{
-      background: radial-gradient(circle at 30% 30%, rgba(255,91,214,0.65), transparent 60%);
-      right:-240px;
-      top:-160px;
-      animation-duration: 20s;
-      opacity: 0.36;
+      right:-260px; top:-220px;
+      opacity: 0.22;
+      animation-duration: 22s;
+      background: radial-gradient(circle at 30% 30%, rgba(100,210,255,0.55), transparent 64%);
     }
     .b3{
-      background: radial-gradient(circle at 30% 30%, rgba(110,243,255,0.70), transparent 62%);
-      left:18%;
-      bottom:-310px;
-      animation-duration: 24s;
-      opacity:0.30;
+      left:22%; bottom:-360px;
+      opacity: 0.18;
+      animation-duration: 26s;
+      background: radial-gradient(circle at 30% 30%, rgba(48,209,88,0.40), transparent 64%);
     }
 
     @keyframes float{
       0%,100%{ transform: translate3d(0,0,0) scale(1); }
-      50%{ transform: translate3d(0,18px,0) scale(1.05); }
+      50%{ transform: translate3d(0,16px,0) scale(1.04); }
     }
 
-    /* gentle vignette + grid */
     .vignette{
       position:absolute; inset:0;
       background:
-        radial-gradient(1200px 600px at 50% 0%, rgba(255,255,255,0.06), transparent 55%),
-        radial-gradient(900px 500px at 0% 50%, rgba(110,243,255,0.05), transparent 60%),
-        radial-gradient(900px 500px at 100% 50%, rgba(255,91,214,0.045), transparent 60%),
-        radial-gradient(900px 600px at 50% 100%, rgba(255,211,122,0.04), transparent 60%);
+        radial-gradient(1100px 620px at 50% 0%, rgba(255,255,255,0.06), transparent 58%),
+        radial-gradient(900px 520px at 0% 50%, rgba(10,132,255,0.05), transparent 60%),
+        radial-gradient(900px 520px at 100% 50%, rgba(100,210,255,0.045), transparent 60%),
+        radial-gradient(900px 620px at 50% 100%, rgba(48,209,88,0.035), transparent 62%);
       opacity: 0.95;
       z-index:-1;
     }
-    .grid{
-      position:absolute; inset:-2px;
-      background-image:
-        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
-      background-size: 48px 48px;
-      opacity: 0.14;
-      mix-blend-mode: overlay;
-      z-index:-1;
-    }
-    @media (prefers-color-scheme: light){
-      .grid{ opacity: 0.07; mix-blend-mode: multiply; }
-    }
 
-    /* micro-grain */
     .grain{
       position:absolute; inset:0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-      opacity: .26;
+      opacity: .22;
       mix-blend-mode: overlay;
       z-index:-1;
     }
 
-    /* =========================
-       Layout wrapper
-       ========================= */
+    /* ============== Layout ============== */
     .wrap{
       max-width: var(--max);
       margin: 0 auto;
-      padding:
-        calc(16px + env(safe-area-inset-top))
-        16px
-        64px;
+      padding: calc(14px + env(safe-area-inset-top)) 16px 64px;
     }
 
-    /* =========================
-       HERO
-       ========================= */
+    /* ============== Hero (reworked) ============== */
     .hero{
       position: relative;
       border-radius: var(--radius-lg);
-      background: linear-gradient(180deg, var(--surface-strong), var(--surface));
       border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--surface-strong), var(--surface));
       box-shadow: var(--shadow);
       padding: 22px;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       overflow:hidden;
-      animation: enter 620ms cubic-bezier(.2,.8,.2,1) both;
+      animation: enter 520ms var(--ease) both;
     }
 
-    /* elegant gradient border glow (doesn't cover text) */
     .hero::before{
       content:"";
       position:absolute;
       inset:-1px;
       border-radius: inherit;
-      background: conic-gradient(
-        from 180deg,
-        rgba(74,163,255,0.0),
-        rgba(74,163,255,0.25),
-        rgba(110,243,255,0.22),
-        rgba(255,91,214,0.18),
-        rgba(255,211,122,0.12),
-        rgba(74,163,255,0.0)
-      );
-      opacity: .55;
-      filter: blur(16px);
-      pointer-events:none;
-    }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(900px 260px at 12% 0%, rgba(74,163,255,0.22), transparent 60%),
-        radial-gradient(900px 260px at 88% 0%, rgba(255,91,214,0.16), transparent 60%);
-      opacity:.6;
+      background: radial-gradient(900px 240px at 12% 0%, rgba(10,132,255,0.22), transparent 60%),
+                  radial-gradient(900px 240px at 88% 0%, rgba(100,210,255,0.16), transparent 60%);
+      opacity: .7;
       pointer-events:none;
     }
 
@@ -247,45 +183,117 @@
       to{ transform: translateY(0); opacity:1; }
     }
 
-    .heroTop{
+    .heroGrid{
       position: relative;
       z-index: 1;
       display:grid;
-      grid-template-columns: 1fr minmax(280px, 340px);
+      grid-template-columns: 1.2fr 0.8fr;
       gap: 18px;
       align-items:start;
     }
     @media (max-width: 860px){
-      .heroTop{ grid-template-columns: 1fr; }
+      .heroGrid{ grid-template-columns: 1fr; }
+    }
+
+    .identity{
+      display:flex;
+      gap: 14px;
+      align-items:flex-start;
+      min-width: 0;
+    }
+
+    .avatar{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 860;
+      letter-spacing: .2px;
+      color: rgba(255,255,255,0.92);
+      background: linear-gradient(180deg, rgba(10,132,255,0.35), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+      user-select:none;
+      flex: 0 0 auto;
+    }
+    @media (prefers-color-scheme: light){
+      .avatar{ color:#111217; }
+    }
+
+    .idText{ min-width:0; }
+
+    .nameRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px 12px;
+      align-items:baseline;
     }
 
     .name{
-      font-size: clamp(30px, 3.2vw, 38px);
-      font-weight: 860;
-      letter-spacing: 0.4px;
+      font-size: clamp(30px, 3.1vw, 38px);
+      font-weight: 880;
+      letter-spacing: 0.2px;
     }
 
-    .headline{
-      margin-top: 8px;
+    .roleTag{
+      font-size: 13px;
       color: var(--muted);
-      font-size: 13.8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.045);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      white-space:nowrap;
     }
-    .headline strong{ color: var(--text); font-weight: 720; }
 
-    .metaRow{
+    .meta{
       margin-top: 10px;
+      color: var(--muted);
+      font-size: 13.6px;
       display:flex;
       flex-wrap:wrap;
-      gap: 10px 14px;
+      gap: 8px 10px;
       align-items:center;
+    }
+
+    .meta .sep{
+      opacity:.55;
+      user-select:none;
+    }
+
+    .meta a{
+      color: inherit;
+      position: relative;
+    }
+    .meta a::after{
+      content:"";
+      position:absolute;
+      left:0; right:0;
+      bottom:-2px;
+      height:1px;
+      background: linear-gradient(90deg, rgba(10,132,255,0.0), rgba(10,132,255,0.45), rgba(100,210,255,0.35), rgba(10,132,255,0.0));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .22s ease;
+      opacity:.9;
+      pointer-events:none;
+    }
+    .meta a:hover::after{ transform: scaleX(1); }
+
+    .meta2{
+      margin-top: 8px;
       color: var(--muted);
       font-size: 13.6px;
     }
+    .meta2 strong{ color: var(--text); font-weight: 720; }
 
     .chips{
       display:flex;
-      gap: 10px;
       flex-wrap:wrap;
+      gap: 10px;
       margin-top: 14px;
     }
     .chip{
@@ -293,85 +301,128 @@
       padding: 7px 11px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.14);
-      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.035));
       transition: transform .18s ease, border-color .18s ease, background .18s ease;
       user-select:none;
       will-change: transform;
     }
     .chip:hover{
       transform: translateY(-2px);
-      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.05));
       border-color: rgba(255,255,255,0.22);
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
     }
 
-    /* right quick actions */
-    .contact{
-      display:flex;
-      flex-direction:column;
+    /* Action tiles (Apple-ish) */
+    .actions{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-      align-self: start;
+      align-content:start;
+    }
+    @media (max-width: 520px){
+      .actions{ grid-template-columns: 1fr; }
     }
 
-    .pill{
+    .tile{
+      position: relative;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.045);
+      box-shadow: var(--shadow-sm);
+      padding: 12px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      overflow:hidden;
+    }
+    .tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.065);
+    }
+
+    .tile::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background: radial-gradient(500px 160px at 10% 0%, rgba(10,132,255,0.16), transparent 55%),
+                  radial-gradient(500px 160px at 90% 0%, rgba(100,210,255,0.12), transparent 55%);
+      opacity: .35;
+      pointer-events:none;
+    }
+
+    .tileHead{
+      position: relative;
+      z-index: 1;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 10px;
-      padding: 11px 12px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      box-shadow: var(--shadow-sm);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      will-change: transform;
-    }
-    .pill:hover{
-      transform: translateY(-2px);
-      border-color: rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.07);
     }
 
-    .pill strong{
-      font-weight: 760;
-      font-size: 13.2px;
-      letter-spacing: 0.2px;
-      white-space:nowrap;
-    }
-
-    .pill .value{
-      color: var(--muted);
+    .tileTitle{
       font-size: 13px;
-      overflow:hidden;
-      text-overflow: ellipsis;
+      font-weight: 760;
+      letter-spacing: .2px;
+      display:flex;
+      gap: 8px;
+      align-items:center;
       white-space:nowrap;
-      max-width: 220px;
-      text-align:right;
     }
 
-    .pill .cta{
-      font-size: 12px;
-      padding: 5px 9px;
-      border-radius: 999px;
+    .tileIcon{
+      width: 22px;
+      height: 22px;
+      border-radius: 8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       border: 1px solid rgba(255,255,255,0.14);
-      color: var(--muted);
-      background: rgba(255,255,255,0.03);
-      cursor:pointer;
-      transition: transform .16s ease, border-color .16s ease, color .16s ease;
+      background: rgba(255,255,255,0.04);
+      font-size: 12px;
       user-select:none;
     }
-    .pill .cta:hover{
-      transform: translateY(-1px);
-      color: var(--text);
-      border-color: rgba(110,243,255,0.30);
+
+    .tileValue{
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
 
-    /* =========================
-       Dock (sticky nav)
-       ========================= */
+    .tileBtns{
+      position: relative;
+      z-index: 1;
+      margin-top: 10px;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor:pointer;
+      transition: transform .16s ease, border-color .16s ease, color .16s ease, background .16s ease;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      color: var(--text);
+      border-color: rgba(10,132,255,0.30);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ============== Dock ============== */
     .dock{
       position: sticky;
       top: calc(10px + env(safe-area-inset-top));
@@ -384,7 +435,7 @@
       padding: 8px 10px;
       border-radius: 999px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.045);
+      background: rgba(255,255,255,0.040);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       box-shadow: var(--shadow-sm);
@@ -397,7 +448,6 @@
       padding: 9px 12px;
       border-radius: 999px;
       border: 1px solid transparent;
-      background: transparent;
       font-size: 13px;
       color: var(--muted);
       transition: transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease;
@@ -412,16 +462,13 @@
     }
     .dock a.active{
       color: var(--text);
-      border-color: rgba(110,243,255,0.32);
-      background: linear-gradient(180deg, rgba(110,243,255,0.14), rgba(255,255,255,0.05));
+      border-color: rgba(10,132,255,0.30);
+      background: linear-gradient(180deg, rgba(10,132,255,0.14), rgba(255,255,255,0.05));
     }
 
-    /* anchor offset so sticky dock won't cover titles */
     section{ scroll-margin-top: 96px; }
 
-    /* =========================
-       Cards
-       ========================= */
+    /* ============== Cards / Sections ============== */
     .sections{
       margin-top: 14px;
       display:flex;
@@ -430,21 +477,19 @@
     }
 
     .card{
-      position: relative;
       border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+      background: linear-gradient(180deg, rgba(255,255,255,0.065), rgba(255,255,255,0.038));
       border-radius: var(--radius);
       padding: 18px;
       box-shadow: var(--shadow-sm);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-
       transform: translateY(14px);
       opacity: 0;
     }
 
     .card.reveal{
-      animation: reveal 720ms cubic-bezier(.2,.8,.2,1) forwards;
+      animation: reveal 720ms var(--ease) forwards;
     }
     @keyframes reveal{
       to{ transform: translateY(0); opacity: 1; }
@@ -468,29 +513,19 @@
       background: linear-gradient(90deg, rgba(255,255,255,0.18), transparent);
     }
 
-    /* entry */
+    /* Entries: calmer + tighter rhythm (better for HR scanning) */
     .entry{
-      padding: 14px 12px;
+      position: relative;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(0,0,0,0.10);
+      padding: 14px 12px;
       margin-bottom: 10px;
       transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      position: relative;
       overflow:hidden;
     }
     @media (prefers-color-scheme: light){
       .entry{ background: rgba(255,255,255,0.60); }
-    }
-    .entry::before{
-      content:"";
-      position:absolute;
-      left:0; top:10px; bottom:10px;
-      width: 3px;
-      border-radius: 3px;
-      background: linear-gradient(180deg, rgba(74,163,255,0.0), rgba(110,243,255,0.65), rgba(255,91,214,0.40), rgba(74,163,255,0.0));
-      opacity: .6;
-      pointer-events:none;
     }
     .entry:hover{
       transform: translateY(-2px);
@@ -498,20 +533,20 @@
       background: rgba(255,255,255,0.06);
     }
     @media (prefers-color-scheme: light){
-      .entry:hover{ background: rgba(255,255,255,0.80); }
+      .entry:hover{ background: rgba(255,255,255,0.82); }
     }
 
     .row{
       display:grid;
-      grid-template-columns: 1.2fr 0.8fr 0.55fr;
+      grid-template-columns: 1.25fr 0.85fr 0.55fr;
       gap: 12px;
       align-items:baseline;
-      padding-left: 8px; /* make room for accent bar */
     }
+
     .row .left{
       font-weight: 820;
       font-size: 14.7px;
-      letter-spacing: 0.15px;
+      letter-spacing: 0.12px;
     }
     .row .mid{
       color: var(--muted);
@@ -527,17 +562,15 @@
     }
     @media (max-width: 760px){
       .row{ grid-template-columns: 1fr; }
-      .row .mid, .row .right{ text-align:left; }
+      .row .mid,.row .right{ text-align:left; }
     }
 
     .subline{
       margin-top: 8px;
-      padding-left: 8px;
       color: var(--muted);
       font-size: 13px;
     }
 
-    /* bullets */
     ul.bullets{
       list-style:none;
       margin-top: 10px;
@@ -546,8 +579,8 @@
       gap: 8px;
       font-size: 14px;
       color: var(--text);
-      padding-left: 8px;
     }
+
     ul.bullets li{
       position:relative;
       padding-left: 18px;
@@ -564,27 +597,19 @@
       width: 7px;
       height: 7px;
       border-radius: 3px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      background: linear-gradient(135deg, rgba(10,132,255,0.95), rgba(100,210,255,0.90));
       transform: translateY(-50%);
-      box-shadow: 0 0 0 3px rgba(74,163,255,0.14);
+      box-shadow: 0 0 0 3px rgba(10,132,255,0.12);
       opacity: .95;
     }
 
-    /* KPI highlight: elegant gradient text */
+    /* KPI highlight: calm Apple gradient (less flashy) */
     .kpi{
       font-weight: 900;
-      background: linear-gradient(90deg, var(--cyan), var(--blue), var(--pink));
+      background: linear-gradient(90deg, rgba(100,210,255,0.95), rgba(10,132,255,0.95));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-    }
-    @media (prefers-color-scheme: light){
-      .kpi{
-        background: linear-gradient(90deg, var(--blue), var(--cyan), var(--pink));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
     }
 
     .footer{
@@ -596,7 +621,7 @@
       opacity: .92;
     }
 
-    /* toast (copy feedback) */
+    /* Toast */
     .toast{
       position: fixed;
       left: 50%;
@@ -631,7 +656,7 @@
         border: 1px solid #ddd !important;
         backdrop-filter:none !important;
       }
-      .chip,.pill{
+      .chip,.tile,.btn{
         border:1px solid #ddd !important;
         background:#fff !important;
         box-shadow:none !important;
@@ -647,7 +672,7 @@
       .hero{ animation:none; opacity:1; transform:none; }
       .card{ opacity:1; transform:none; }
       .card.reveal{ animation:none; }
-      .chip,.pill,.dock a{ transition:none; }
+      .chip,.tile,.dock a,.btn{ transition:none; }
     }
   </style>
 </head>
@@ -658,18 +683,300 @@
     <div class="blob b2"></div>
     <div class="blob b3"></div>
     <div class="vignette"></div>
-    <div class="grid"></div>
     <div class="grain"></div>
   </div>
 
   <div class="wrap">
+
     <!-- HERO -->
     <section class="hero" id="top">
-      <div class="heroTop">
-        <div>
-          <div class="name">陈亭伊</div>
+      <div class="heroGrid">
+        <!-- Left: identity -->
+        <div class="identity">
+          <div class="avatar" aria-hidden="true">陈</div>
+          <div class="idText">
+            <div class="nameRow">
+              <div class="name">陈亭伊</div>
+              <div class="roleTag">运营 / 策划 / 增长</div>
+            </div>
 
-          <div class="metaRow">
-            <span><a class="link" href="tel:18723250436" aria-label="拨打电话">18723250436</a></span>
-            <span>｜</span>
-            <span><a class="link" href="mailto:cty007376@gmail.com" aria-label="发送邮件">cty007376@gmail.com</a></spa
+            <div class="meta">
+              <a href="tel:18723250436" aria-label="拨打电话">18723250436</a>
+              <span class="sep">｜</span>
+              <a href="mailto:cty007376@gmail.com" aria-label="发送邮件">cty007376@gmail.com</a>
+              <span class="sep">｜</span>
+              <span>女</span>
+              <span class="sep">｜</span>
+              <span>籍贯：重庆</span>
+            </div>
+
+            <div class="meta2">
+              <strong>工作经验：</strong>2年 ｜ <strong>求职意向：</strong>运营、策划、增长 ｜ <strong>期望城市：</strong>北京/唐山
+            </div>
+
+            <div class="chips" aria-label="tags">
+              <span class="chip">运营</span>
+              <span class="chip">策划</span>
+              <span class="chip">增长</span>
+              <span class="chip">北京/唐山</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: actions -->
+        <div class="actions" aria-label="quick actions">
+          <div class="tile">
+            <div class="tileHead">
+              <div class="tileTitle"><span class="tileIcon">📞</span>电话</div>
+            </div>
+            <div class="tileValue">18723250436</div>
+            <div class="tileBtns">
+              <a class="btn" href="tel:18723250436">拨打</a>
+              <button class="btn" type="button" data-copy="18723250436">复制</button>
+            </div>
+          </div>
+
+          <div class="tile">
+            <div class="tileHead">
+              <div class="tileTitle"><span class="tileIcon">✉️</span>邮箱</div>
+            </div>
+            <div class="tileValue">cty007376@gmail.com</div>
+            <div class="tileBtns">
+              <a class="btn" href="mailto:cty007376@gmail.com">发送</a>
+              <button class="btn" type="button" data-copy="cty007376@gmail.com">复制</button>
+            </div>
+          </div>
+
+          <div class="tile">
+            <div class="tileHead">
+              <div class="tileTitle"><span class="tileIcon">🧾</span>一页式简历</div>
+            </div>
+            <div class="tileValue">建议：浏览器打印为 PDF</div>
+            <div class="tileBtns">
+              <button class="btn" type="button" id="printBtn">打印 / 导出 PDF</button>
+            </div>
+          </div>
+
+          <div class="tile">
+            <div class="tileHead">
+              <div class="tileTitle"><span class="tileIcon">📍</span>期望城市</div>
+            </div>
+            <div class="tileValue">北京 / 唐山</div>
+            <div class="tileBtns">
+              <button class="btn" type="button" data-copy="北京/唐山">复制</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dock -->
+    <nav class="dock" aria-label="sections">
+      <a href="#edu" data-target="edu">🎓 教育经历</a>
+      <a href="#intern" data-target="intern">🏢 实习经历</a>
+      <a href="#proj" data-target="proj">✨ 项目经历</a>
+      <a href="#top" data-target="top">⬆︎ 顶部</a>
+    </nav>
+
+    <div class="sections">
+
+      <!-- 教育经历 -->
+      <section class="card" id="edu">
+        <div class="sectionTitle">
+          <h2>教育经历</h2>
+          <div class="line"></div>
+        </div>
+
+        <div class="entry" style="margin-bottom:0;">
+          <div class="row">
+            <div class="left">中央民族大学「985A类双一流院校」</div>
+            <div class="mid">本科｜网络与新媒体</div>
+            <div class="right">2023-2027</div>
+          </div>
+          <div class="subline">CET-4、CRT-6、国家人才英语中级、普通话二甲</div>
+        </div>
+      </section>
+
+      <!-- 实习经历 -->
+      <section class="card" id="intern">
+        <div class="sectionTitle">
+          <h2>实习经历</h2>
+          <div class="line"></div>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">北京梧桐花开科技有限公司</div>
+            <div class="mid">新媒体运营及策划</div>
+            <div class="right">2025.09-2026.01</div>
+          </div>
+          <ul class="bullets">
+            <li>流量策划：热榜制作独立完成全流程任务；优化热榜逻辑，提升内容精准度，助力流量分发效率提升。</li>
+            <li>数据统计分析：完成近 <span class="kpi">30</span> 位财经博主数据全维度统计，输出覆盖产出、传播数据的分析报告；拆解教育、情感等 3 个领域抖音博主爆款逻辑，总结选题方向与内容结构，为增长选题提供参考。</li>
+            <li>优化：参与完善支付宝电鳗平台分发 SOP，补充关键操作节点；整理任务错误统计表，为降低运营失误、提升效率提供数据支撑。</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">北京蒸汽记忆公司</div>
+            <div class="mid">产品运营</div>
+            <div class="right">2025.06-2025.09</div>
+          </div>
+          <ul class="bullets">
+            <li>审核生态监控：牵头完成 Slack、Zendesk 等 <span class="kpi">12</span> 个第三方平台 OAuth 接入，建立“资料模板 + 审核清单 + 回调校验”SOP，实现平均审核时长 6 天、一次通过率 85%。</li>
+            <li>增长与产品优化：上线新手引导及激活任务，补齐权限/令牌过期提示、错误态回写等细节；搭建注册、首日激活、7/30 日留存等指标口径，每两周复盘渠道与版本表现，5 个月内实现 MAU+20%、新增注册 +27%、首日激活率 38%、7 日留存 24%。</li>
+            <li>GTM/对外：策划执行清华、北大等 6 场高校推介会，统筹讲稿、Demo 等物料，累计到场 1100+、意向 420、当场注册 230；输出中英双语 ONE-PAGER、FAQ、集成白皮书，支撑 BD 外联与官网转化；对接海外开发者/伙伴 100+ 场会议，促成 32 家试用、10 家 PoC、3 家长期合作。</li>
+            <li>招聘优化：（投递-筛选-约面-反馈），将面试周期压缩至 7 天，沉淀面试题库与候选人标签规则。</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">奇迹创坛</div>
+            <div class="mid">人才调研</div>
+            <div class="right">2025.01-2025.05</div>
+          </div>
+          <ul class="bullets">
+            <li>数据标注、数据清洗：收集与结构化 <span class="kpi">20,000+</span> 条目标人才数据，完成去重与字段统一；系统化上传 100% 完成。</li>
+            <li>建联人才：基于需求画像，锁定并触达 500+ 高潜候选人，达成合作 50+；沉淀“人才 mapping”SOP，支持半导体与海外医疗等跨部门项目。</li>
+            <li>负责薪资与标签的可视化标注与抽样校验，保障数据标注一致性 ≥97%、抽检错误率 ≤3%。</li>
+          </ul>
+        </div>
+
+        <div class="entry" style="margin-bottom:0;">
+          <div class="row">
+            <div class="left">爱阅-英语教培机构</div>
+            <div class="mid">英语教师</div>
+            <div class="right">2024.09-2024.12</div>
+          </div>
+          <ul class="bullets">
+            <li>负责 6-16 岁学生英语阶段性课程教学，设计趣味课堂活动（如情景对话、英文游戏）；策划并执行“万圣节英语派对”活动参与人数超 200 人，获家长满意度 100%。</li>
+            <li>所带班级学员英语成绩平均提升 25%，续课率达 90%。</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 项目经历 -->
+      <section class="card" id="proj">
+        <div class="sectionTitle">
+          <h2>项目经历</h2>
+          <div class="line"></div>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">中国移动创客比赛-颜探网页开发二等奖</div>
+            <div class="mid">网页开发</div>
+            <div class="right">2024.10-2024.12</div>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">NCDA未来设计师大赛北京市三等奖</div>
+            <div class="mid">摄影 / 后期剪辑 / 脚本构思</div>
+            <div class="right">2025.03-至今</div>
+          </div>
+        </div>
+
+        <div class="entry" style="margin-bottom:0;">
+          <div class="row">
+            <div class="left">新媒体视域下少数民族非遗文化的创新传播与立法传承——以回族民谣文化为例</div>
+            <div class="mid">队长</div>
+            <div class="right">2023.10-2024.05</div>
+          </div>
+          <div class="subline">
+            从内容策划到制作，数据分析到运营推广我都有了一定的理论基础和扎实的实践经验。项目编号：QMRP2023110913
+          </div>
+        </div>
+
+        <div class="footer">© 2026 陈亭伊｜运营 / 策划 / 增长｜期望城市：北京/唐山</div>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">已复制</div>
+
+  <script>
+    // Reveal cards (light float + fade; not covering text)
+    const cards = document.querySelectorAll('.card');
+    const revealIO = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('reveal');
+          revealIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    cards.forEach(c=>revealIO.observe(c));
+
+    // Dock scroll spy
+    const dockLinks = Array.from(document.querySelectorAll('.dock a[data-target]'));
+    const spySections = dockLinks
+      .map(a => document.getElementById(a.dataset.target))
+      .filter(Boolean);
+
+    function setActive(id){
+      dockLinks.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+    }
+
+    const spyIO = new IntersectionObserver((entries)=>{
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if(visible && visible.target && visible.target.id){
+        setActive(visible.target.id);
+      }
+    }, { threshold: [0.25, 0.35, 0.5, 0.65] });
+
+    spySections.forEach(s => spyIO.observe(s));
+    setActive('edu');
+
+    // Print
+    const printBtn = document.getElementById('printBtn');
+    if(printBtn) printBtn.addEventListener('click', () => window.print());
+
+    // Toast + Copy
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
+
+    function showToast(text){
+      if(!toast) return;
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> toast.classList.remove('show'), 1200);
+    }
+
+    async function copyText(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已复制：' + text);
+      }catch(err){
+        // fallback
+        const t = document.createElement('textarea');
+        t.value = text;
+        t.style.position = 'fixed';
+        t.style.opacity = '0';
+        document.body.appendChild(t);
+        t.select();
+        try{
+          document.execCommand('copy');
+          showToast('已复制：' + text);
+        }catch(e){
+          showToast('复制失败，请手动复制');
+        }
+        document.body.removeChild(t);
+      }
+    }
+
+    document.querySelectorAll('[data-copy]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        copyText(btn.getAttribute('data-copy'));
+      });
+    });
+  </script>
+</body>
+</html>
