@@ -69,10 +69,15 @@
 
     /* =========================================================
       ✅ Base Reset / Layout
+      ✅ Scroll Fix (iOS/Safari/GitHub Pages): ensure document grows & scrolls
     ========================================================= */
     *{ box-sizing:border-box; margin:0; padding:0; }
-    html, body{ height:100%; }
+    html{ height:100%; }
     body{
+      min-height:100%;
+      overflow-y:auto;
+      overflow-x:hidden;
+
       font-family: -apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue","Noto Sans SC",Arial,sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -84,7 +89,8 @@
       opacity: 0;
       transform: scale(1.03) translateZ(0);
       animation: fade-in-elastic-morandi 0.9s var(--ease-in) forwards;
-      contain: layout paint;
+
+      /* ✅ 不要在 body 上用 contain: layout paint（会导致 iOS 不可滚动） */
     }
 
     a{ color: inherit; text-decoration:none; }
@@ -116,7 +122,7 @@
       justify-content:center;
       pointer-events:auto;
       margin: 10px 0 14px;
-      contain: layout paint;
+      contain: layout paint; /* 顶栏可用 contain，不影响 body 滚动 */
     }
     .topbar .bar{
       width: min(var(--max), 960px);
@@ -132,16 +138,14 @@
       contain: layout paint;
     }
     .topbar .bar::before{
-      /* 背景层（不直接改背景色，改opacity） */
       content:"";
       position:absolute; inset:0;
-      background: rgba(255,255,255,0.98); /* ✅ 允许：卡片白的透明度变体 */
+      background: rgba(255,255,255,0.98);
       opacity: 0;
       transition: opacity 0.3s var(--ease-ui);
       will-change: opacity;
     }
     .topbar .bar::after{
-      /* 阴影层（用opacity控制） */
       content:"";
       position:absolute; inset:0;
       box-shadow: var(--shadow-3);
@@ -164,14 +168,9 @@
       outline: none;
       touch-action: manipulation;
     }
-    .navlink:hover{
-      color: var(--accent);
-    }
-    .navlink.is-active{
-      color: var(--text);
-    }
+    .navlink:hover{ color: var(--accent); }
+    .navlink.is-active{ color: var(--text); }
     .navlink.is-active::after{
-      /* 极简指示（只用accent透明度变体） */
       content:"";
       position:absolute;
       left: 10px; right: 10px;
@@ -182,11 +181,8 @@
       transform: scaleX(1);
       transform-origin: center;
     }
-    .navlink:active{
-      transform: scale(0.98) translateZ(0);
-    }
+    .navlink:active{ transform: scale(0.98) translateZ(0); }
 
-    /* 无障碍焦点环（outline-offset 通过box-shadow模拟，避免layout） */
     .navlink:focus-visible,
     .chip:focus-visible,
     .pill:focus-visible,
@@ -201,15 +197,10 @@
       box-shadow: var(--shadow-1);
       padding: var(--pad);
       margin: 14px 0;
-      border: 1px solid rgba(229,229,231,0.85); /* ✅ gray-2透明度变体 */
+      border: 1px solid rgba(229,229,231,0.85);
 
-      /* 初始：更强的入场空间感（rotateX 8deg） */
       opacity: 0;
-      transform:
-        translateY(16px)
-        scale(0.90)
-        rotateX(8deg)
-        translateZ(0);
+      transform: translateY(16px) scale(0.90) rotateX(8deg) translateZ(0);
       transform-origin: center top;
       backface-visibility: hidden;
       will-change: transform, opacity;
@@ -217,50 +208,34 @@
       position: relative;
       overflow: hidden;
     }
-
-    /* 流体遮罩层（模拟底部向上渐显遮罩：只动opacity/transform） */
     .card::after{
       content:"";
       position:absolute;
       left:0; right:0; bottom:-2px;
       height: 42%;
-      background: linear-gradient(to top,
-        rgba(255,255,255,1),
-        rgba(255,255,255,0)
-      );
+      background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0));
       opacity: 0;
       transform: translateY(10px) translateZ(0);
       will-change: opacity, transform;
       pointer-events:none;
     }
-
-    .card.is-in{
-      animation: card-in-3d-morandi 0.6s var(--ease-in) forwards;
-    }
-    .card.is-in::after{
-      animation: mask-rise-morandi 0.3s var(--ease-in) forwards;
-    }
+    .card.is-in{ animation: card-in-3d-morandi 0.6s var(--ease-in) forwards; }
+    .card.is-in::after{ animation: mask-rise-morandi 0.3s var(--ease-in) forwards; }
 
     @keyframes card-in-3d-morandi{
       0%   { opacity:0; transform: translateY(16px) scale(0.90) rotateX(8deg) translateZ(0); }
-      82%  { opacity:1; transform: translateY(0) scale(1.02) rotateX(0deg) translateZ(0); } /* 轻回弹 */
+      82%  { opacity:1; transform: translateY(0) scale(1.02) rotateX(0deg) translateZ(0); }
       100% { opacity:1; transform: translateY(0) scale(1) rotateX(0deg) translateZ(0); }
     }
     @keyframes mask-rise-morandi{
       to{ opacity: 1; transform: translateY(0) translateZ(0); }
     }
 
-    /* ---------- 4) 卡片 Hover（桌面端）+ 四重复合动效 ----------
-      ① translateY(-5px)
-      ② shadow变深（≤0.07）
-      ③ 背景莫兰迪渐变微位移：用伪元素 transform 实现（不动bg-position）
-      ④ 边框描边渐显
-    ---------------------------------------------------------- */
+    /* ---------- 4) 卡片 Hover（桌面端） + 复合动效 ---------- */
     .card.hoverable{
       transition: transform 0.4s var(--ease-ui), box-shadow 0.5s var(--ease-ui), border-color 0.3s var(--ease-ui);
     }
     .card.hoverable::before{
-      /* 背景细腻莫兰迪流光（仅使用灰阶 + accent透明度） */
       content:"";
       position:absolute; inset:-40px;
       background:
@@ -272,13 +247,11 @@
       will-change: transform, opacity;
       pointer-events:none;
     }
-
-    /* hover只在桌面端启用：移动端会弱化 */
     @media (hover:hover) and (pointer:fine){
       .card.hoverable:hover{
         transform: translateY(calc(-1 * var(--hover-lift))) scale(1) translateZ(0);
         box-shadow: var(--shadow-2);
-        border-color: rgba(141,163,185,0.25); /* 描边渐显（accent透明） */
+        border-color: rgba(141,163,185,0.25);
       }
       .card.hoverable:hover::before{
         opacity: 1;
@@ -290,10 +263,7 @@
       }
     }
 
-    /* 点击态：scale 0.98→1.01→1（0.3s）+ 背景微暗(伪层opacity瞬变) */
-    .card.press{
-      animation: press-elastic-morandi 0.3s var(--ease-ui) forwards;
-    }
+    .card.press{ animation: press-elastic-morandi 0.3s var(--ease-ui) forwards; }
     @keyframes press-elastic-morandi{
       0%{ transform: translateY(0) scale(1) translateZ(0); }
       45%{ transform: translateY(0) scale(0.98) translateZ(0); }
@@ -309,10 +279,7 @@
       justify-content:space-between;
       flex-wrap:wrap;
     }
-    .heroLeft{
-      min-width: 320px;
-      flex: 1.2;
-    }
+    .heroLeft{ min-width: 320px; flex: 1.2; }
     .heroRight{
       min-width: 280px;
       flex: 0.9;
@@ -322,7 +289,6 @@
       align-items:stretch;
     }
 
-    /* 头像位 */
     .avatarWrap{
       display:flex;
       align-items:center;
@@ -337,8 +303,6 @@
       background: var(--gray-1);
       border: 1px solid rgba(229,229,231,0.9);
       box-shadow: var(--shadow-1);
-
-      /* 头像微妙呼吸（仅在非reduce-motion） */
       transform: translateZ(0);
       will-change: transform, opacity;
     }
@@ -376,7 +340,6 @@
     }
     .metaLine .weak{ color: var(--text-3); }
 
-    /* 求职意向标签（无限渐变循环：用伪层transform实现） */
     .chips{
       margin-top: 14px;
       display:flex;
@@ -403,11 +366,7 @@
     .chip::before{
       content:"";
       position:absolute; inset:-12px;
-      background: linear-gradient(90deg,
-        rgba(241,241,243,1),
-        rgba(229,229,231,1),
-        rgba(241,241,243,1)
-      );
+      background: linear-gradient(90deg, rgba(241,241,243,1), rgba(229,229,231,1), rgba(241,241,243,1));
       opacity: 0.9;
       transform: translateX(-12%) translateZ(0);
       will-change: transform, opacity;
@@ -418,20 +377,16 @@
       from{ transform: translateX(-12%) translateZ(0); }
       to  { transform: translateX(12%) translateZ(0); }
     }
-
     @media (hover:hover) and (pointer:fine){
-      .chip:hover::before{ animation-duration: 4.8s; } /* 提速 2.5x */
+      .chip:hover::before{ animation-duration: 4.8s; }
       .chip:hover{
         border-color: rgba(141,163,185,0.35);
         box-shadow: 0 0 6px rgba(141,163,185,0.18);
         color: var(--text);
       }
     }
-    .chip:active{
-      animation: press-elastic-morandi 0.3s var(--ease-ui) forwards;
-    }
+    .chip:active{ animation: press-elastic-morandi 0.3s var(--ease-ui) forwards; }
 
-    /* Hero 的影院级入场：高斯模糊15px + translateY(-20px) + scale 0.97 → 三段归位(1.2s) */
     .heroCard{
       filter: blur(15px);
       opacity: 0;
@@ -442,11 +397,10 @@
       0%   { filter: blur(15px); opacity:0; transform: translateY(-20px) scale(0.97) translateZ(0); }
       35%  { filter: blur(8px);  opacity:1; transform: translateY(-6px)  scale(0.99) translateZ(0); }
       70%  { filter: blur(2px);  opacity:1; transform: translateY(0)     scale(1.00) translateZ(0); }
-      88%  { filter: blur(0px);  opacity:1; transform: translateY(0)     scale(1.01) translateZ(0); } /* 弹性回弹 */
+      88%  { filter: blur(0px);  opacity:1; transform: translateY(0)     scale(1.01) translateZ(0); }
       100% { filter: blur(0px);  opacity:1; transform: translateY(0)     scale(1.00) translateZ(0); }
     }
 
-    /* 批次入场：同批次逐行阶梯式入场（JS会给每行加 delay） */
     .stagger{
       opacity: 0;
       transform: translateY(10px) scale(0.98) translateZ(0);
@@ -461,7 +415,6 @@
       100% { opacity:1; transform: translateY(0)    scale(1) translateZ(0); }
     }
 
-    /* 信息 pill（右侧快捷） */
     .pill{
       display:flex;
       align-items:center;
@@ -480,22 +433,13 @@
       touch-action: manipulation;
     }
     .pill strong{ color: var(--text); font-weight: 650; }
-    .pill:active{
-      animation: press-elastic-morandi 0.3s var(--ease-ui) forwards;
-    }
+    .pill:active{ animation: press-elastic-morandi 0.3s var(--ease-ui) forwards; }
     @media (hover:hover) and (pointer:fine){
-      .pill:hover{
-        transform: translateY(-2px) translateZ(0);
-      }
+      .pill:hover{ transform: translateY(-2px) translateZ(0); }
     }
 
-    /* ---------- 6) Section Title：装饰线 scaleX 0→1 + 标题文字滑入 + letter-spacing 0.8→0 ---------- */
-    .sectionTitle{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    /* ---------- 6) Section Title 动效 ---------- */
+    .sectionTitle{ display:flex; align-items:center; gap: 10px; margin-bottom: 14px; }
     .sectionBar{
       width: 12px; height: 12px;
       border-radius: 4px;
@@ -514,12 +458,8 @@
       will-change: transform, opacity;
     }
 
-    .card.is-in .sectionBar{
-      animation: bar-grow-morandi 0.8s var(--ease-in) forwards;
-    }
-    .card.is-in .sectionTitle h2{
-      animation: title-slide-morandi 0.7s var(--ease-in) forwards;
-    }
+    .card.is-in .sectionBar{ animation: bar-grow-morandi 0.8s var(--ease-in) forwards; }
+    .card.is-in .sectionTitle h2{ animation: title-slide-morandi 0.7s var(--ease-in) forwards; }
 
     @keyframes bar-grow-morandi{
       0%   { transform: scaleX(0) translateZ(0); background: rgba(141,163,185,0.0); }
@@ -530,7 +470,6 @@
       100% { opacity:1; transform: translateX(0) translateZ(0); letter-spacing: 0px; }
     }
 
-    /* 滚动高亮：进入视口时给标题一个柔光（用伪元素/opacity模拟，避免频繁paint） */
     .sectionTitle .glow{
       position:absolute;
       inset:-6px -10px -6px -10px;
@@ -540,12 +479,7 @@
       transition: opacity 0.4s var(--ease-ui);
       pointer-events:none;
     }
-    .sectionTitleWrap{
-      position: relative;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+    .sectionTitleWrap{ position: relative; display:flex; align-items:center; gap:10px; }
     .sectionTitleWrap.is-hot .glow{ opacity: 1; }
 
     /* ---------- 7) Entry + list 逐行入场 ---------- */
@@ -562,9 +496,7 @@
       will-change: transform, opacity;
       contain: layout paint;
     }
-    .entry.is-in{
-      animation: entry-in-elastic-morandi 0.55s var(--ease-in) forwards;
-    }
+    .entry.is-in{ animation: entry-in-elastic-morandi 0.55s var(--ease-in) forwards; }
     @keyframes entry-in-elastic-morandi{
       0%   { opacity:0; transform: translateY(10px) scale(0.98) translateZ(0); }
       85%  { opacity:1; transform: translateY(0) scale(1.02) translateZ(0); }
@@ -584,13 +516,8 @@
       .row{ grid-template-columns: 1fr; }
       .row .mid,.row .right{ text-align:left; }
     }
-    .subline{
-      margin-top: 8px;
-      color: var(--text-2);
-      font-size: 13.5px;
-    }
+    .subline{ margin-top: 8px; color: var(--text-2); font-size: 13.5px; }
 
-    /* list item：入场 + hover 动效（下划线渐显） */
     ul.bullets{
       list-style:none;
       margin-top: 10px;
@@ -600,7 +527,6 @@
       color: var(--text-2);
       font-size: 14px;
     }
-
     li.bullet{
       position: relative;
       padding-left: 18px;
@@ -619,8 +545,6 @@
       left:0; top: 0.62em;
       width: 7px; height:7px;
       border-radius: 50%;
-
-      /* 莫兰迪双态呼吸（颜色在accent-2 与 accent间切换） */
       background: rgba(165,165,141,0.85);
       transform: translateY(-50%) scale(1) translateZ(0);
       animation: dot-breath-dual-morandi 3s var(--ease-ui) infinite;
@@ -630,8 +554,6 @@
       0%,100%{ transform: translateY(-50%) scale(1) translateZ(0); background: rgba(165,165,141,0.85); }
       50%    { transform: translateY(-50%) scale(1.4) translateZ(0); background: rgba(141,163,185,0.9); }
     }
-
-    /* 下划线：只用accent透明度，transform scaleX 做渐显 */
     li.bullet::after{
       content:"";
       position:absolute;
@@ -646,26 +568,20 @@
       transition: transform 0.3s var(--ease-ui), opacity 0.3s var(--ease-ui);
       pointer-events:none;
     }
-
     li.bullet:hover{
       color: rgba(141,163,185,1);
       letter-spacing: 0.4px;
       transform: translateY(-1.5px) translateZ(0);
     }
-    li.bullet:hover::after{
-      transform: scaleX(1) translateZ(0);
-      opacity: 1;
-    }
+    li.bullet:hover::after{ transform: scaleX(1) translateZ(0); opacity: 1; }
 
-    li.bullet.is-in{
-      animation: bullet-in-morandi 0.55s var(--ease-in) forwards;
-    }
+    li.bullet.is-in{ animation: bullet-in-morandi 0.55s var(--ease-in) forwards; }
     @keyframes bullet-in-morandi{
       0%{ opacity:0; transform: translateX(10px) translateZ(0); }
       100%{ opacity:1; transform: translateX(0) translateZ(0); }
     }
 
-    /* ---------- 8) 数字：弹性计数 + 逐位弹动 + 颜色过渡 + 脉冲高光 ---------- */
+    /* ---------- 8) 数字动效 ---------- */
     .num{
       display:inline-flex;
       gap: 1px;
@@ -675,41 +591,28 @@
       will-change: transform, opacity;
       transform: translateZ(0);
     }
-    .num .digit{
-      display:inline-block;
-      transform: translateZ(0);
-      will-change: transform, opacity;
-    }
+    .num .digit{ display:inline-block; transform: translateZ(0); will-change: transform, opacity; }
     .num.is-counting{ color: rgba(141,163,185,1); }
-    .digit.pop{
-      animation: digit-pop-morandi 0.12s var(--ease-ui) both;
-    }
+    .digit.pop{ animation: digit-pop-morandi 0.12s var(--ease-ui) both; }
     @keyframes digit-pop-morandi{
       0%{ transform: scale(1) translateZ(0); opacity: 0.92; }
       50%{ transform: scale(1.15) translateZ(0); opacity: 1; }
       100%{ transform: scale(1) translateZ(0); opacity: 1; }
     }
-    /* 计数完成后脉冲高光（循环4次，每次0.4s） */
-    .num.pulse{
-      animation: pulse-highlight-morandi 0.4s var(--ease-ui) 0s 4;
-    }
+    .num.pulse{ animation: pulse-highlight-morandi 0.4s var(--ease-ui) 0s 4; }
     @keyframes pulse-highlight-morandi{
       0%,100%{ text-shadow: 0 0 0 rgba(141,163,185,0); }
       50%{ text-shadow: 0 0 6px rgba(141,163,185,0.25); }
     }
 
-    /* ---------- 9) 姓名彩蛋：五层动效（桌面端完整，移动端降级） ---------- */
-    .name.pop{
-      animation: name-five-layer-morandi 0.5s var(--ease-in) both;
-    }
+    /* ---------- 9) 姓名彩蛋 ---------- */
+    .name.pop{ animation: name-five-layer-morandi 0.5s var(--ease-in) both; }
     @keyframes name-five-layer-morandi{
       0%{ transform: rotate(0deg) scale(1) translateZ(0); }
       45%{ transform: rotate(10deg) scale(1.12) translateZ(0); }
       100%{ transform: rotate(0deg) scale(1) translateZ(0); }
     }
-    .name.stroke{
-      -webkit-text-stroke: 1px rgba(141,163,185,0.95);
-    }
+    .name.stroke{ -webkit-text-stroke: 1px rgba(141,163,185,0.95); }
 
     .ripple{
       position: absolute;
@@ -727,7 +630,6 @@
       20%{ opacity: 1; }
       100%{ opacity: 0; transform: translate(-50%,-50%) scale(1.8) translateZ(0); }
     }
-    /* Hero背景柔光闪：用伪元素 opacity 0.95→1（0.15s） */
     .flash{
       position:absolute; inset:0;
       background: rgba(141,163,185,0.06);
@@ -740,26 +642,21 @@
       from{ opacity: 1; }
       to{ opacity: 0; }
     }
-    /* 标签同步微振 */
-    .chips.shiver .chip{
-      animation: chip-shiver-morandi 0.2s var(--ease-ui) 0s 1;
-    }
+    .chips.shiver .chip{ animation: chip-shiver-morandi 0.2s var(--ease-ui) 0s 1; }
     @keyframes chip-shiver-morandi{
       0%,100%{ transform: translateY(0) translateZ(0); }
       25%{ transform: translateY(-1px) translateZ(0); }
       75%{ transform: translateY(1px) translateZ(0); }
     }
 
-    /* ---------- 10) 闲置12s后：极缓悬浮（9s循环） ---------- */
-    .heroIdle{
-      animation: idle-float-morandi 9s var(--ease-out) infinite;
-    }
+    /* ---------- 10) 闲置悬浮 ---------- */
+    .heroIdle{ animation: idle-float-morandi 9s var(--ease-out) infinite; }
     @keyframes idle-float-morandi{
       0%,100%{ transform: translateY(0) translateZ(0); }
       50%{ transform: translateY(-4px) translateZ(0); }
     }
 
-    /* ---------- 11) 返回顶部按钮：出现回弹 + 呼吸光环（伪元素，仅动transform/opacity） ---------- */
+    /* ---------- 11) 返回顶部按钮 ---------- */
     .toTop{
       position: fixed;
       right: 18px;
@@ -785,7 +682,6 @@
       z-index: 60;
     }
     .toTop::before{
-      /* 呼吸光环（模拟box-shadow变化，不直接动shadow） */
       content:"";
       position:absolute;
       inset:-8px;
@@ -805,16 +701,12 @@
       70%{ opacity:1; transform: scale(1.05) translateZ(0); }
       100%{ opacity:1; transform: scale(1) translateZ(0); }
     }
-    .toTop.is-show::before{
-      animation: breathe-ring-morandi 3s var(--ease-ui) infinite;
-    }
+    .toTop.is-show::before{ animation: breathe-ring-morandi 3s var(--ease-ui) infinite; }
     @keyframes breathe-ring-morandi{
       0%,100%{ opacity: 0.25; transform: scale(0.96) translateZ(0); }
       50%{ opacity: 0.55; transform: scale(1.04) translateZ(0); }
     }
-    .toTop:active{
-      animation: press-elastic-morandi 0.3s var(--ease-ui) forwards;
-    }
+    .toTop:active{ animation: press-elastic-morandi 0.3s var(--ease-ui) forwards; }
 
     /* ---------- 12) Footer ---------- */
     footer{
@@ -826,32 +718,22 @@
 
     /* =========================================================
       ✅ Mobile Adaptation (<768px)
-      - hover弱化（仅保留颜色变化）
-      - 动效时长 -25%
-      - 循环动效速度 -40%
-      - 视差幅度减半/或关闭
-      - 关闭复杂 3D / ripple（JS也会降级）
     ========================================================= */
     @media (max-width: 768px){
       :root{
-        --dur-base: 0.30s;        /* 0.4 * 0.75 */
-        --dur-complex: 0.68s;     /* 0.9 * 0.75 */
-        --parallax-card: 1.5px;   /* 减半 */
-        --parallax-text: 0.5px;   /* 减半 */
+        --dur-base: 0.30s;
+        --dur-complex: 0.68s;
+        --parallax-card: 1.5px;
+        --parallax-text: 0.5px;
       }
-      .card{ transform: translateY(12px) scale(0.92) rotateX(0deg) translateZ(0); } /* 关闭3D */
-      .card::after{ display:none; } /* 简化遮罩 */
-
-      /* 移动端取消hover位移/阴影，仅保留色值变化 */
+      .card{ transform: translateY(12px) scale(0.92) rotateX(0deg) translateZ(0); }
+      .card::after{ display:none; }
       .card.hoverable{ transition: border-color var(--dur-base) var(--ease-ui); }
       .card.hoverable:hover{ transform: none; box-shadow: var(--shadow-1); border-color: rgba(141,163,185,0.18); }
+      .chip::before{ animation-duration: 16.8s; }
+      li.bullet::before{ animation-duration: 4.2s; }
+      .toTop.is-show::before{ animation-duration: 5s; }
 
-      /* 循环动效降低 40%：chip gradient */
-      .chip::before{ animation-duration: 16.8s; } /* 12 / (1-0.4) = 20? 这里更保守 16.8 */
-      li.bullet::before{ animation-duration: 4.2s; } /* 3 / (1-0.4) */
-      .toTop.is-show::before{ animation-duration: 5s; } /* 3 / (1-0.4) */
-
-      /* 触摸反馈：scale 0.96→1.02→1（0.2s） */
       .pill:active, .chip:active, .navlink:active, .toTop:active{
         animation: touch-elastic-morandi 0.2s var(--ease-ui) forwards;
       }
@@ -865,8 +747,6 @@
 
     /* =========================================================
       ✅ prefers-reduced-motion
-      - 关闭所有循环动效
-      - 保留核心入场/交互的淡入淡出 + 微缩放
     ========================================================= */
     @media (prefers-reduced-motion: reduce){
       *{ animation: none !important; transition: none !important; }
@@ -879,10 +759,6 @@
 
 <body>
   <div class="wrap" id="top">
-
-    <!-- =========================================================
-      Header / Topbar (极简顶栏)
-    ========================================================= -->
     <header class="topbar" id="topbar">
       <div class="bar" role="navigation" aria-label="页面导航">
         <a class="navlink is-active" href="#top" data-nav="top">顶部</a>
@@ -892,19 +768,14 @@
       </div>
     </header>
 
-    <!-- =========================================================
-      Main
-    ========================================================= -->
     <main>
-
-      <!-- 个人信息（优先级最高批次） -->
+      <!-- 个人信息 -->
       <section class="card heroCard hoverable" id="hero" data-morandi-card>
         <div class="hero">
           <div class="heroLeft">
             <div class="avatarWrap">
-              <!-- ✅ 头像位：把你的照片放在 assets/avatar.jpg -->
+              <!-- ✅ 生活照/头像图片位置：assets/avatar.jpg（下面有详细教程） -->
               <img class="avatar" id="avatarImg" src="assets/avatar.jpg" alt="陈亭伊 个人照片" />
-              <!-- 图片加载失败时的降级占位（JS会自动切换显示） -->
               <div class="avatarFallback" id="avatarFallback" aria-hidden="true" style="display:none;">CTY</div>
 
               <div>
@@ -1064,39 +935,23 @@
           </div>
         </article>
 
-        <footer>
-          © 2026 陈亭伊｜运营 / 策划 / 增长｜期望城市：北京/唐山
-        </footer>
+        <footer>© 2026 陈亭伊｜运营 / 策划 / 增长｜期望城市：北京/唐山</footer>
       </section>
-
     </main>
 
-    <!-- 返回顶部按钮 -->
     <button class="toTop" id="toTop" aria-label="返回顶部">↑</button>
   </div>
 
   <script>
-    /* =========================================================
-      #morandi-animation — 动效核心逻辑（JS）
-      架构：MorandiAnimation 类
-      - 懒加载：IntersectionObserver（阈值 35%）
-      - 滚动：节流(16ms) + 防抖（顶栏 / toTop / parallax）
-      - 数字计数：弹性计数 1.8s + 逐位弹动 + 结束脉冲
-      - 性能检测：低性能设备自动降级（关闭视差/逐位动画/复杂彩蛋）
-      - 移动端降级：关闭 3D / ripple 等复杂动效
-    ========================================================= */
-
     class MorandiAnimation {
       constructor(){
         this.isMobile = window.matchMedia('(max-width: 768px)').matches;
         this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // 性能检测（低性能降级）
         const cores = navigator.hardwareConcurrency || 4;
         const mem = navigator.deviceMemory || 4;
-        this.lowPerf = (cores <= 4 && mem <= 4); // 保守策略
+        this.lowPerf = (cores <= 4 && mem <= 4);
 
-        // 仅桌面 + 非低性能 + 非reduce-motion 开启视差
         this.enableParallax = (!this.isMobile && !this.lowPerf && !this.reduceMotion);
 
         this.topbar = document.getElementById('topbar');
@@ -1105,18 +960,12 @@
 
         this.navLinks = Array.from(document.querySelectorAll('.navlink'));
         this.cards = Array.from(document.querySelectorAll('[data-morandi-card]'));
-        this.entries = Array.from(document.querySelectorAll('[data-entry]'));
-        this.bullets = Array.from(document.querySelectorAll('[data-bullet]'));
-        this.nums = Array.from(document.querySelectorAll('.num[data-num]'));
 
-        // hero stagger lines (批次内逐行入场)
         this.staggers = Array.from(document.querySelectorAll('[data-stagger]'));
 
-        // idle
         this.idleTimer = null;
         this.idleActive = false;
 
-        // parallax state
         this.lastY = window.scrollY;
         this.vel = 0;
         this.rafId = null;
@@ -1134,28 +983,22 @@
         this.initCardPressFeedback();
         this.initNameEasterEgg();
         this.initIdleFloat();
-
-        if(this.enableParallax){
-          this.initParallax();
-        }
+        // 视差（默认禁用，因为会影响部分设备稳定性；你需要再开我可以给你更稳版本）
+        // if(this.enableParallax){ this.initParallax(); }
       }
 
-      /* ---------- 头像加载失败降级 ---------- */
       handleAvatarFallback(){
         const img = document.getElementById('avatarImg');
         const fb = document.getElementById('avatarFallback');
         if(!img || !fb) return;
-
         img.addEventListener('error', ()=>{
           img.style.display = 'none';
           fb.style.display = 'flex';
         }, { once:true });
       }
 
-      /* ---------- 全局批次入场：个人信息→求职意向(标签/右侧pill)→后续由Observer ---------- */
       initHeroBatchIn(){
         if(this.reduceMotion){
-          // 直接显示
           this.staggers.forEach(el=>{
             el.classList.add('is-in');
             el.style.opacity = 1;
@@ -1163,40 +1006,33 @@
           });
           return;
         }
-
-        // 批次间隔 0.2s，同批次逐行 0.07s
-        const baseDelay = 0.25; // heroCard自身动画开始后稍等
+        const baseDelay = 0.25;
         this.staggers.forEach((el, idx)=>{
           el.style.animationDelay = `${baseDelay + idx * 0.07}s`;
           el.classList.add('stagger');
-          // stagger 动画触发
           requestAnimationFrame(()=> el.classList.add('is-in'));
         });
       }
 
-      /* ---------- 懒加载：卡片阈值 35% 入场，entry/li 逐级延迟 ---------- */
       initCardObserver(){
         if(this.reduceMotion){
           this.cards.forEach(c=>c.classList.add('is-in'));
-          this.entries.forEach(e=>e.classList.add('is-in'));
-          this.bullets.forEach(b=>b.classList.add('is-in'));
+          document.querySelectorAll('[data-entry]').forEach(e=>e.classList.add('is-in'));
+          document.querySelectorAll('[data-bullet]').forEach(b=>b.classList.add('is-in'));
           return;
         }
 
         const io = new IntersectionObserver((entries)=>{
           entries.forEach(en=>{
             if(!en.isIntersecting) return;
-
             const card = en.target;
             card.classList.add('is-in');
 
-            // 卡片内 entry 逐个出现：0.2s 批次间隔的视觉感
             const innerEntries = Array.from(card.querySelectorAll('[data-entry]'));
             innerEntries.forEach((entryEl, i)=>{
               entryEl.style.animationDelay = `${0.10 + i * 0.10}s`;
               entryEl.classList.add('is-in');
 
-              // 同 entry 内 bullet 逐行 0.07s 阶梯式入场
               const lis = Array.from(entryEl.querySelectorAll('[data-bullet]'));
               lis.forEach((li, j)=>{
                 li.style.animationDelay = `${0.18 + j * 0.07}s`;
@@ -1204,7 +1040,6 @@
               });
             });
 
-            // 数字计数（只在卡片首次进入触发）
             const nums = Array.from(card.querySelectorAll('.num[data-num]'));
             nums.forEach(n => this.animateNumberOnce(n));
 
@@ -1215,7 +1050,6 @@
         this.cards.forEach(c=>io.observe(c));
       }
 
-      /* ---------- 标题滚动高亮（进入视口顶部时加柔光） ---------- */
       initSectionHighlight(){
         if(this.reduceMotion) return;
 
@@ -1238,20 +1072,15 @@
         });
       }
 
-      /* ---------- 顶栏 & 返回顶部显示：节流(16ms) ---------- */
       initNavAndScroll(){
         const onScroll = this.throttle(()=>{
           const y = window.scrollY || document.documentElement.scrollTop;
-          // 顶栏背景：>100px 显示
           this.topbar.classList.toggle('is-scrolled', y > 100);
-
-          // toTop：>300px 显示
           this.toTop.classList.toggle('is-show', y > 300);
         }, 16);
 
         window.addEventListener('scroll', onScroll, { passive:true });
 
-        // section 高亮
         const io = new IntersectionObserver((entries)=>{
           entries.forEach(en=>{
             if(!en.isIntersecting) return;
@@ -1268,14 +1097,12 @@
         });
       }
 
-      /* ---------- 返回顶部 ---------- */
       initToTop(){
         this.toTop.addEventListener('click', ()=>{
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       }
 
-      /* ---------- 卡片点击按压反馈（只加class，不做复杂计算） ---------- */
       initCardPressFeedback(){
         this.cards.forEach(card=>{
           card.addEventListener('pointerdown', ()=>{
@@ -1290,18 +1117,15 @@
         });
       }
 
-      /* ---------- 数字弹性计数：1.8s + 逐位弹动 + 完成脉冲 ---------- */
       animateNumberOnce(el){
         if(el.dataset.counted === '1') return;
         el.dataset.counted = '1';
 
-        // 低性能 / 移动端：降级为“简单计数”（不拆分digit）
         const simple = (this.lowPerf || this.isMobile);
-
         const raw = (el.dataset.num || el.textContent || '').trim();
         const meta = this.parseNum(raw);
 
-        const duration = 1800; // 1.8s
+        const duration = 1800;
         const start = performance.now();
         let lastText = '';
 
@@ -1309,8 +1133,6 @@
 
         const tick = (now)=>{
           const t = Math.min(1, (now - start) / duration);
-
-          // 弹性计数（阻尼感）：easeOutBack-ish（自写，避免引库）
           const eased = this.easeOutElasticLite(t);
 
           const val = meta.num * eased;
@@ -1328,7 +1150,6 @@
           if(t < 1){
             requestAnimationFrame(tick);
           }else{
-            // 结束：还原最终格式（避免千分位误差）
             if(simple) el.textContent = meta.raw;
             else this.renderDigits(el, meta.raw);
 
@@ -1348,7 +1169,6 @@
         const hasComma = raw.includes(',');
 
         const num = parseFloat(raw.replace(/,/g,'').replace('%','').replace('+','')) || 0;
-
         return { raw, num, hasPct, hasPlus, hasComma };
       }
 
@@ -1361,10 +1181,8 @@
       }
 
       renderDigits(el, txt){
-        // 逐位弹动：每次重建 digit（数量不多，持续1.8s可接受）
         el.innerHTML = '';
-        const chars = String(txt).split('');
-        chars.forEach(ch=>{
+        String(txt).split('').forEach(ch=>{
           const span = document.createElement('span');
           span.className = 'digit pop';
           span.textContent = ch;
@@ -1373,49 +1191,40 @@
         });
       }
 
-      // 轻量弹性（不夸张，不抢焦点）
       easeOutElasticLite(t){
         if(t === 0) return 0;
         if(t === 1) return 1;
-        // 类“回弹”效果：强度控制在<=30%
         const p = 0.32;
         return Math.pow(2, -10 * t) * Math.sin((t - p / 4) * (2 * Math.PI) / p) + 1;
       }
 
-      /* ---------- 姓名彩蛋：桌面端完整五层；移动端降级 ---------- */
       initNameEasterEgg(){
         const btn = document.getElementById('nameBtn');
         const chips = document.getElementById('chips');
         if(!btn) return;
 
         let used = false;
-
         const trigger = ()=>{
           if(used) return;
           used = true;
 
-          // 1) 文字rotate+scale
           btn.classList.remove('pop');
           void btn.offsetWidth;
           btn.classList.add('pop');
 
-          // 4) 描边短暂出现
           btn.classList.add('stroke');
           setTimeout(()=> btn.classList.remove('stroke'), 300);
 
-          // 3) Hero背景柔光闪
           const flash = document.createElement('div');
           flash.className = 'flash';
           this.hero.appendChild(flash);
           flash.addEventListener('animationend', ()=> flash.remove(), { once:true });
 
-          // 5) 周边标签同步微振
           if(chips){
             chips.classList.add('shiver');
             setTimeout(()=> chips.classList.remove('shiver'), 220);
           }
 
-          // 2) 3圈波纹（移动端/低性能降级：不生成）
           if(this.isMobile || this.lowPerf || this.reduceMotion) return;
 
           const rect = btn.getBoundingClientRect();
@@ -1442,7 +1251,6 @@
         });
       }
 
-      /* ---------- 闲置12s：hero慢悬浮；交互即停止并归位 ---------- */
       initIdleFloat(){
         if(this.isMobile || this.lowPerf || this.reduceMotion) return;
 
@@ -1465,64 +1273,6 @@
         reset();
       }
 
-      /* ---------- 视差：仅桌面高性能启用；滚动速度驱动微位移 ---------- */
-      initParallax(){
-        const textTargets = Array.from(document.querySelectorAll('.left, .mid, .right, .subline, .metaLine'));
-        const cardTargets = this.cards;
-
-        const loop = ()=>{
-          const y = window.scrollY || 0;
-          const dy = y - this.lastY;
-          this.lastY = y;
-
-          // 速度阻尼
-          this.vel = this.vel * 0.86 + dy * 0.14;
-
-          const v = Math.max(-50, Math.min(50, this.vel));
-
-          // 卡片反向微位移（±3px）
-          const cy = Math.max(-this.cssPx('--parallax-card'), Math.min(this.cssPx('--parallax-card'), -v * 0.06));
-          // 文字正向微位移（±1px）
-          const tx = Math.max(-this.cssPx('--parallax-text'), Math.min(this.cssPx('--parallax-text'), v * 0.02));
-
-          cardTargets.forEach(c=>{
-            // 不覆盖入场transform：只加一层 translateZ(0) 的微位移（使用CSS变量更安全）
-            c.style.setProperty('--py', cy + 'px');
-            c.style.transform = c.style.transform.replace(/translateY\([^)]*\)/, `translateY(${16}px)`);
-            // 用更安全方式：给卡片加内层容器会更干净，但这里不破坏结构，改为设置一个“额外位移”的CSS变量
-          });
-
-          // 更稳：只给可见区域文字加微位移（这里简化处理）
-          textTargets.forEach(t=>{
-            t.style.transform = `translateX(${tx}px) translateZ(0)`;
-            t.style.willChange = 'transform';
-          });
-
-          this.rafId = requestAnimationFrame(loop);
-        };
-
-        // 不要一直跑：只有滚动时启动，停下来自动结束（防抖）
-        let stopTimer = null;
-        const onScroll = this.throttle(()=>{
-          if(!this.rafId) this.rafId = requestAnimationFrame(loop);
-          if(stopTimer) clearTimeout(stopTimer);
-          stopTimer = setTimeout(()=>{
-            if(this.rafId){
-              cancelAnimationFrame(this.rafId);
-              this.rafId = null;
-            }
-          }, 200);
-        }, 16);
-
-        window.addEventListener('scroll', onScroll, { passive:true });
-      }
-
-      cssPx(varName){
-        const v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-        return parseFloat(v.replace('px','')) || 0;
-      }
-
-      /* ---------- 工具：节流 / 防抖 ---------- */
       throttle(fn, wait=16){
         let last = 0;
         let timer = null;
@@ -1542,7 +1292,6 @@
       }
     }
 
-    // 初始化
     new MorandiAnimation();
   </script>
 </body>
