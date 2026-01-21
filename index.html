@@ -7,269 +7,383 @@
 
   <style>
     :root{
-      --bg: #f5f5f7;
-      --card: rgba(255,255,255,0.85);
-      --text: #1d1d1f;
-      --muted: #6e6e73;
-      --line: rgba(0,0,0,0.08);
-      --shadow: 0 10px 30px rgba(0,0,0,0.06);
-      --shadow-sm: 0 3px 10px rgba(0,0,0,0.04);
-      --radius-lg: 22px;
-      --radius: 16px;
-      --blue: #007aff;
-      --blue-soft: rgba(0,122,255,0.12);
-      --green: #34c759;
-      --orange: #ff9500;
-      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
-              "Helvetica Neue", "Noto Sans SC", Arial, sans-serif;
+      --bg: #0b0b10;
+      --card: rgba(255,255,255,0.06);
+      --card-strong: rgba(255,255,255,0.09);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.66);
+      --faint: rgba(255,255,255,0.42);
+      --line: rgba(255,255,255,0.10);
+
+      --blue: #4aa3ff;
+      --cyan: #6ef3ff;
+      --pink: #ff5bd6;
+      --gold: #ffd37a;
+      --green: #44f1a6;
+
+      --shadow: 0 18px 60px rgba(0,0,0,0.55);
+      --shadow-sm: 0 10px 30px rgba(0,0,0,0.35);
+
+      --radius-lg: 24px;
+      --radius: 18px;
+
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+              "PingFang SC","Helvetica Neue","Noto Sans SC", Arial, sans-serif;
+
+      --max: 980px;
     }
 
-    @media (prefers-color-scheme: dark) {
+    /* Light mode fallback */
+    @media (prefers-color-scheme: light){
       :root{
-        --bg:#0b0b0f;
-        --card: rgba(28,28,30,0.78);
-        --text:#f5f5f7;
-        --muted:#a1a1a6;
-        --line: rgba(255,255,255,0.10);
-        --shadow: 0 12px 34px rgba(0,0,0,0.45);
-        --shadow-sm: 0 4px 14px rgba(0,0,0,0.35);
-        --blue-soft: rgba(10,132,255,0.18);
-        --blue: #0a84ff;
+        --bg: #f6f7fb;
+        --card: rgba(255,255,255,0.78);
+        --card-strong: rgba(255,255,255,0.92);
+        --text: #111217;
+        --muted: #565a67;
+        --faint: #7a7f8f;
+        --line: rgba(0,0,0,0.08);
+        --shadow: 0 18px 60px rgba(0,0,0,0.10);
+        --shadow-sm: 0 10px 30px rgba(0,0,0,0.08);
+
+        --blue: #007aff;
+        --cyan: #00c7d6;
+        --pink: #ff2d95;
+        --gold: #ffb020;
+        --green: #34c759;
       }
     }
 
     *{ box-sizing:border-box; margin:0; padding:0; font-family:var(--font); }
+    html,body{ height:100%; }
     body{
-      background:
-        radial-gradient(900px 500px at 10% 0%, rgba(0,122,255,0.10), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(255,149,0,0.10), transparent 55%),
-        var(--bg);
-      color:var(--text);
-      line-height:1.65;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x:hidden;
+      line-height:1.7;
     }
 
-    a{ color:inherit; text-decoration:none; }
-    a:hover{ text-decoration:underline; }
-
-    .wrap{
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 28px 16px 56px;
+    /* 背景动效：漂浮渐变光斑 + 微噪点 */
+    .bg{
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow:hidden;
     }
-
-    /* 顶部信息区 */
-    .hero{
-      position: relative;
-      padding: 22px;
-      border-radius: var(--radius-lg);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      overflow: hidden;
-    }
-    .hero::before{
-      content:"";
+    .blob{
       position:absolute;
-      inset:-80px -80px auto auto;
-      width: 220px; height:220px;
-      background: radial-gradient(circle, rgba(0,122,255,0.22), transparent 60%);
-      filter: blur(2px);
-      transform: rotate(10deg);
+      width: 560px;
+      height: 560px;
+      border-radius: 50%;
+      filter: blur(48px);
+      opacity: 0.45;
+      transform: translate3d(0,0,0);
+      animation: float 14s ease-in-out infinite;
+    }
+    .b1{ background: radial-gradient(circle at 30% 30%, var(--blue), transparent 60%); left:-160px; top:-180px; }
+    .b2{ background: radial-gradient(circle at 30% 30%, var(--pink), transparent 60%); right:-220px; top:-120px; animation-duration: 18s; }
+    .b3{ background: radial-gradient(circle at 30% 30%, var(--cyan), transparent 60%); left:20%; bottom:-280px; animation-duration: 22s; opacity:0.35; }
+    @keyframes float{
+      0%,100%{ transform: translate3d(0,0,0) scale(1); }
+      50%{ transform: translate3d(0,22px,0) scale(1.06); }
+    }
+    .grain{
+      position:absolute; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: .35;
+      z-index:-1;
       pointer-events:none;
     }
 
-    .hero-top{
+    a{ color: inherit; text-decoration:none; }
+    a:hover{ text-decoration: underline; }
+
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 16px 64px;
+    }
+
+    /* 顶部：姓名 + 快捷信息 */
+    .hero{
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--card-strong), var(--card));
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-lg);
+      padding: 22px 22px 18px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      position: relative;
+      overflow:hidden;
+      transform: translateY(8px);
+      opacity: 0;
+      animation: enter 650ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    .hero::after{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(900px 240px at 10% 0%, rgba(74,163,255,0.25), transparent 60%),
+                  radial-gradient(900px 240px at 90% 0%, rgba(255,91,214,0.18), transparent 60%);
+      pointer-events:none;
+      opacity: .55;
+    }
+    @keyframes enter{
+      to{ transform: translateY(0); opacity:1; }
+    }
+
+    .heroTop{
       display:flex;
-      gap: 14px;
+      gap: 16px;
       align-items:flex-start;
       justify-content:space-between;
       flex-wrap:wrap;
+      position: relative;
+      z-index: 1;
     }
 
     .name{
-      font-size: 30px;
-      font-weight: 760;
-      letter-spacing: 0.2px;
+      font-size: 34px;
+      font-weight: 820;
+      letter-spacing: 0.4px;
     }
-    .subtitle{
+    .headline{
       margin-top: 6px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 14.5px;
     }
 
     .chips{
       display:flex;
-      gap: 8px;
+      gap: 10px;
       flex-wrap:wrap;
       margin-top: 14px;
     }
     .chip{
-      padding: 6px 10px;
       font-size: 13px;
+      padding: 7px 11px;
       border-radius: 999px;
-      background: var(--blue-soft);
-      color: var(--blue);
-      border: 1px solid rgba(0,122,255,0.18);
-      white-space:nowrap;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      user-select:none;
+    }
+    .chip:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.18);
     }
 
     .contact{
       display:flex;
       flex-direction:column;
-      gap: 8px;
-      min-width: 260px;
+      gap: 10px;
+      min-width: 320px;
       margin-left:auto;
     }
-    .contact-row{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content:flex-end;
-      color: var(--muted);
-      font-size: 14px;
-    }
     .pill{
-      display:inline-flex;
+      display:flex;
       align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      background: rgba(0,0,0,0.03);
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
       border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
       box-shadow: var(--shadow-sm);
-      color: var(--text);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: transform .18s ease, border-color .18s ease;
     }
-    @media (prefers-color-scheme: dark){
-      .pill{ background: rgba(255,255,255,0.05); }
+    .pill:hover{ transform: translateY(-2px); border-color: rgba(255,255,255,0.18); }
+    .pill strong{ font-weight: 720; }
+    .pill span{ color: var(--muted); font-size: 13px; }
+
+    .pill .cta{
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--muted);
     }
 
-    /* 主体两栏布局 */
-    .grid{
-      display:grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    @media (max-width: 860px){
-      .grid{ grid-template-columns: 1fr; }
-      .contact{ width:100%; margin-left:0; }
-      .contact-row{ justify-content:flex-start; }
+    /* 内容区：严格按照你的简历顺序 */
+    .sections{
+      margin-top: 18px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
     }
 
     .card{
-      background: var(--card);
       border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
       border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
       padding: 18px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      transform: translateY(14px);
+      opacity: 0;
+    }
+    .card.reveal{
+      animation: reveal 700ms cubic-bezier(.2,.8,.2,1) forwards;
+    }
+    @keyframes reveal{
+      to{ transform: translateY(0); opacity: 1; }
     }
 
-    .section-title{
+    .sectionTitle{
       display:flex;
       align-items:center;
-      gap: 10px;
-      margin-bottom: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-    .section-title::before{
-      content:"";
-      width: 10px; height: 10px;
-      border-radius: 3px;
-      background: var(--blue);
-      box-shadow: 0 0 0 3px var(--blue-soft);
-    }
-
-    .meta{
-      display:flex;
-      align-items:flex-start;
       justify-content:space-between;
       gap: 12px;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
-    .meta .org{
-      font-weight: 700;
-      font-size: 15px;
+    .sectionTitle h2{
+      font-size: 16px;
+      font-weight: 820;
+      letter-spacing: 0.2px;
     }
-    .meta .time{
+    .sectionTitle .line{
+      height:1px;
+      flex: 1;
+      background: linear-gradient(90deg, rgba(255,255,255,0.16), transparent);
+    }
+
+    /* 条目：公司/学校 + 角色 + 时间（尽量对齐简历视觉） */
+    .entry{
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.10);
+      margin-bottom: 10px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    @media (prefers-color-scheme: light){
+      .entry{ background: rgba(255,255,255,0.55); }
+    }
+    .entry:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.07);
+    }
+    @media (prefers-color-scheme: light){
+      .entry:hover{ background: rgba(255,255,255,0.75); }
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr 0.45fr;
+      gap: 12px;
+      align-items:baseline;
+    }
+    .row .left{
+      font-weight: 780;
+      font-size: 14.8px;
+      letter-spacing: 0.15px;
+    }
+    .row .mid{
+      color: var(--muted);
+      font-size: 14px;
+      text-align:center;
+      font-weight: 680;
+    }
+    .row .right{
+      color: var(--faint);
+      font-size: 13px;
+      text-align:right;
+      white-space:nowrap;
+    }
+    @media (max-width: 760px){
+      .row{ grid-template-columns: 1fr; }
+      .row .mid{ text-align:left; }
+      .row .right{ text-align:left; }
+    }
+
+    .subline{
+      margin-top: 8px;
       color: var(--muted);
       font-size: 13px;
-      white-space:nowrap;
-      padding-top: 2px;
-    }
-    .role{
-      color: var(--blue);
-      font-size: 14px;
-      margin: 2px 0 10px;
-      font-weight: 650;
     }
 
     ul.bullets{
       list-style:none;
+      margin-top: 10px;
       display:flex;
       flex-direction:column;
       gap: 8px;
       font-size: 14px;
-      color: rgba(29,29,31,0.88);
-    }
-    @media (prefers-color-scheme: dark){
-      ul.bullets{ color: rgba(245,245,247,0.88); }
+      color: var(--text);
     }
     ul.bullets li{
       position:relative;
       padding-left: 18px;
+      color: rgba(255,255,255,0.86);
+    }
+    @media (prefers-color-scheme: light){
+      ul.bullets li{ color: rgba(17,18,23,0.86); }
     }
     ul.bullets li::before{
       content:"";
       position:absolute;
-      left:0; top: 0.52em;
-      width: 6px; height:6px;
-      border-radius: 2px;
-      background: var(--blue);
+      left: 0;
+      top: 0.62em;
+      width: 7px;
+      height: 7px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
       transform: translateY(-50%);
+      box-shadow: 0 0 0 3px rgba(74,163,255,0.14);
     }
 
     .kpi{
-      font-weight: 750;
-      color: var(--blue);
+      font-weight: 860;
+      color: var(--cyan);
+    }
+    @media (prefers-color-scheme: light){
+      .kpi{ color: var(--blue); }
     }
 
-    .small{
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .projects{
+    /* 顶部小浮动导航（高级感+动效） */
+    .dock{
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      margin: 14px 0 0;
       display:flex;
-      flex-direction:column;
       gap: 10px;
+      flex-wrap:wrap;
+      justify-content:center;
     }
-    .project{
-      padding: 14px;
-      border-radius: 14px;
+    .dock a{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
       border: 1px solid var(--line);
-      background: rgba(0,0,0,0.02);
-    }
-    @media (prefers-color-scheme: dark){
-      .project{ background: rgba(255,255,255,0.05); }
-    }
-    .project .title{
-      font-weight: 750;
-      font-size: 14.5px;
-    }
-    .project .sub{
-      margin-top: 4px;
-      color: var(--muted);
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-sm);
       font-size: 13px;
+      color: var(--muted);
+      transition: transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease;
     }
-    .project .desc{
-      margin-top: 8px;
-      font-size: 14px;
+    .dock a:hover{
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.10);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .dock a.active{
+      color: var(--text);
+      border-color: rgba(110,243,255,0.35);
+      background: linear-gradient(180deg, rgba(110,243,255,0.14), rgba(255,255,255,0.06));
     }
 
     .footer{
@@ -278,145 +392,236 @@
       color: var(--muted);
       font-size: 13px;
       padding: 10px 0 0;
+      opacity: .9;
     }
 
-    /* 小提示：打印更像简历 */
+    /* 打印：更像简历 */
     @media print{
-      body{ background:#fff; }
-      .hero,.card{ box-shadow:none; background:#fff; }
+      .bg,.dock{ display:none !important; }
+      body{ background:#fff; color:#111; }
+      .hero,.card,.entry{ box-shadow:none; background:#fff; border: 1px solid #ddd; }
+      .chip,.pill{ border:1px solid #ddd; background:#fff; }
       a{ text-decoration:none; }
+    }
+
+    /* 动画偏好：减少动效 */
+    @media (prefers-reduced-motion: reduce){
+      .blob{ animation:none; }
+      .hero{ animation:none; opacity:1; transform:none; }
+      .card{ opacity:1; transform:none; }
+      .card.reveal{ animation:none; }
     }
   </style>
 </head>
 
 <body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <div class="grain"></div>
+  </div>
+
   <div class="wrap">
 
-    <!-- 顶部信息 -->
-    <section class="hero">
-      <div class="hero-top">
+    <!-- 个人信息（严格按你简历的文字顺序） -->
+    <section class="hero" id="top">
+      <div class="heroTop">
         <div>
           <div class="name">陈亭伊</div>
-          <div class="subtitle">运营 / 策划 / 增长｜期望城市：北京/唐山｜工作经验：2年</div>
+          <div class="headline">
+            <a href="tel:18723250436">18723250436</a> ｜
+            <a href="mailto:cty007376@gmail.com">cty007376@gmail.com</a> ｜
+            女 ｜ 籍贯：重庆
+          </div>
+          <div class="headline">
+            工作经验：2年 ｜ 求职意向：运营、策划、增长 ｜ 期望城市：北京/唐山
+          </div>
 
           <div class="chips" aria-label="tags">
             <span class="chip">运营</span>
             <span class="chip">策划</span>
             <span class="chip">增长</span>
+            <span class="chip">北京/唐山</span>
           </div>
         </div>
 
-        <div class="contact">
-          <div class="contact-row">
-            <span class="pill">📞 <a href="tel:18723250436">18723250436</a></span>
+        <!-- 右侧快捷按钮 -->
+        <div class="contact" aria-label="quick actions">
+          <div class="pill">
+            <strong>📞 电话</strong>
+            <span><a href="tel:18723250436">点击拨号</a></span>
+            <span class="cta">tel</span>
           </div>
-          <div class="contact-row">
-            <span class="pill">✉️ <a href="mailto:cty007376@gmail.com">cty007376@gmail.com</a></span>
+          <div class="pill">
+            <strong>✉️ 邮箱</strong>
+            <span><a href="mailto:cty007376@gmail.com">点击发送</a></span>
+            <span class="cta">mail</span>
           </div>
-          <div class="contact-row">
-            <span class="pill">👤 女｜籍贯：重庆</span>
+          <div class="pill">
+            <strong>🧾 一页式简历</strong>
+            <span>支持打印成 PDF</span>
+            <span class="cta">print</span>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="grid">
-      <!-- 左栏：经历 -->
-      <main class="card">
-        <div class="section-title">实习经历</div>
+    <!-- 浮动导航（有动效，方便面试官快速跳转） -->
+    <nav class="dock" aria-label="sections">
+      <a href="#edu">🎓 教育经历</a>
+      <a href="#intern">🏢 实习经历</a>
+      <a href="#proj">✨ 项目经历</a>
+      <a href="#top">⬆︎ 顶部</a>
+    </nav>
 
-        <section style="margin-bottom:14px;">
-          <div class="meta">
-            <div class="org">北京梧桐花开科技有限公司</div>
-            <div class="time">2025.09 — 2026.01</div>
-          </div>
-          <div class="role">新媒体运营及策划</div>
-          <ul class="bullets">
-            <li>流量策划：独立完成热榜制作全流程，优化热榜逻辑，提升内容精准度与流量分发效率</li>
-            <li>数据统计分析：完成近 <span class="kpi">30</span> 位财经博主全维度数据统计并输出分析报告；拆解 3 个领域抖音爆款逻辑，为增长选题提供参考</li>
-            <li>流程优化：参与完善支付宝电鳗平台分发 SOP，整理任务错误统计表，降低运营失误、提升效率</li>
-          </ul>
-        </section>
+    <div class="sections">
 
-        <section style="margin-bottom:14px;">
-          <div class="meta">
-            <div class="org">北京蒸汽记忆公司</div>
-            <div class="time">2025.06 — 2025.09</div>
-          </div>
-          <div class="role">产品运营</div>
-          <ul class="bullets">
-            <li>审核生态监控：牵头完成 <span class="kpi">12</span> 个第三方平台 OAuth 接入并建立 SOP；平均审核时长 6 天，一次通过率 <span class="kpi">85%</span></li>
-            <li>增长与产品优化：5 个月内实现 MAU <span class="kpi">+20%</span>、新增注册 <span class="kpi">+27%</span>、首日激活率 <span class="kpi">38%</span>、7 日留存 <span class="kpi">24%</span></li>
-            <li>GTM/对外：策划执行 6 场高校推介会（到场 <span class="kpi">1100+</span>、意向 <span class="kpi">420</span>、注册 <span class="kpi">230</span>）；对接海外开发者 <span class="kpi">100+</span> 场会议，促成 <span class="kpi">32</span> 家试用、<span class="kpi">10</span> 家 PoC、<span class="kpi">3</span> 家长期合作</li>
-            <li>招聘优化：将面试周期压缩至 <span class="kpi">7</span> 天，沉淀面试题库与候选人标签规则</li>
-          </ul>
-        </section>
-
-        <section style="margin-bottom:14px;">
-          <div class="meta">
-            <div class="org">奇迹创坛</div>
-            <div class="time">2025.01 — 2025.05</div>
-          </div>
-          <div class="role">人才调研</div>
-          <ul class="bullets">
-            <li>数据标注/清洗：收集结构化 <span class="kpi">20,000+</span> 条人才数据，去重并统一字段，系统化上传 100% 完成</li>
-            <li>建联人才：触达 <span class="kpi">500+</span> 高潜候选人，达成合作 <span class="kpi">50+</span>；沉淀「人才 mapping」SOP</li>
-            <li>数据质控：保障标注一致性 ≥ <span class="kpi">97%</span>、抽检错误率 ≤ <span class="kpi">3%</span></li>
-          </ul>
-        </section>
-
-        <section>
-          <div class="meta">
-            <div class="org">爱阅｜英语教培机构</div>
-            <div class="time">2024.09 — 2024.12</div>
-          </div>
-          <div class="role">英语教师</div>
-          <ul class="bullets">
-            <li>负责 6–16 岁学生英语课程教学，设计趣味课堂活动</li>
-            <li>策划「万圣节英语派对」，参与人数 <span class="kpi">200+</span>，家长满意度 <span class="kpi">100%</span></li>
-            <li>班级平均提分 <span class="kpi">25%</span>，续课率 <span class="kpi">90%</span></li>
-          </ul>
-        </section>
-      </main>
-
-      <!-- 右栏：教育/项目 -->
-      <aside class="card">
-        <div class="section-title">教育经历 & 证书</div>
-
-        <div style="margin-bottom:14px;">
-          <div class="meta">
-            <div class="org">中央民族大学（985A类双一流）</div>
-            <div class="time">2023 — 2027</div>
-          </div>
-          <div class="role" style="margin-bottom:6px;">本科｜网络与新媒体</div>
-          <div class="small">证书：CET-4、CRT-6、国家人才英语中级、普通话二甲</div>
+      <!-- 教育经历（不放最后 ✅） -->
+      <section class="card" id="edu">
+        <div class="sectionTitle">
+          <h2>教育经历</h2>
+          <div class="line"></div>
         </div>
 
-        <div class="section-title" style="margin-top:18px;">项目经历 & 获奖</div>
-        <div class="projects">
-          <div class="project">
-            <div class="title">中国移动创客比赛｜颜探网页开发</div>
-            <div class="sub">2024.10 — 2024.12｜网页开发</div>
-            <div class="desc">获奖：<span class="kpi">二等奖</span></div>
+        <div class="entry">
+          <div class="row">
+            <div class="left">中央民族大学「985A类双一流院校」</div>
+            <div class="mid">本科｜网络与新媒体</div>
+            <div class="right">2023-2027</div>
           </div>
+          <div class="subline">CET-4、CRT-6、国家人才英语中级、普通话二甲</div>
+        </div>
+      </section>
 
-          <div class="project">
-            <div class="title">NCDA 未来设计师大赛</div>
-            <div class="sub">2025.03 — 至今｜摄影 / 后期剪辑 / 脚本构思</div>
-            <div class="desc">获奖：北京市 <span class="kpi">三等奖</span></div>
+      <!-- 实习经历 -->
+      <section class="card" id="intern">
+        <div class="sectionTitle">
+          <h2>实习经历</h2>
+          <div class="line"></div>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">北京梧桐花开科技有限公司</div>
+            <div class="mid">新媒体运营及策划</div>
+            <div class="right">2025.09-2026.01</div>
           </div>
+          <ul class="bullets">
+            <li>流量策划：热榜制作独立完成全流程任务；优化热榜逻辑，提升内容精准度，助力流量分发效率提升。</li>
+            <li>数据统计分析：完成近 <span class="kpi">30</span> 位财经博主数据全维度统计，输出覆盖产出、传播数据的分析报告；拆解教育、情感等 3 个领域抖音博主爆款逻辑，总结选题方向与内容结构，为增长选题提供参考。</li>
+            <li>优化：参与完善支付宝电鳗平台分发 SOP，补充关键操作节点；整理任务错误统计表，为降低运营失误、提升效率提供数据支撑。</li>
+          </ul>
+        </div>
 
-          <div class="project">
-            <div class="title">新媒体视域下少数民族非遗文化的创新传播与立法传承</div>
-            <div class="sub">2023.10 — 2024.05｜队长｜项目编号：QMRP2023110913</div>
-            <div class="desc">以回族民谣文化为例，从内容策划到制作、数据分析到运营推广，积累了完整闭环实践经验。</div>
+        <div class="entry">
+          <div class="row">
+            <div class="left">北京蒸汽记忆公司</div>
+            <div class="mid">产品运营</div>
+            <div class="right">2025.06-2025.09</div>
+          </div>
+          <ul class="bullets">
+            <li>审核生态监控：牵头完成 Slack、Zendesk 等 <span class="kpi">12</span> 个第三方平台 OAuth 接入，建立“资料模板 + 审核清单 + 回调校验”SOP，实现平均审核时长 6 天、一次通过率 85%。</li>
+            <li>增长与产品优化：上线新手引导及激活任务，补齐权限/令牌过期提示、错误态回写等细节；搭建注册、首日激活、7/30 日留存等指标口径，每两周复盘渠道与版本表现，5 个月内实现 MAU+20%、新增注册 +27%、首日激活率 38%、7 日留存 24%。</li>
+            <li>GTM/对外：策划执行清华、北大等 6 场高校推介会，统筹讲稿、Demo 等物料，累计到场 1100+、意向 420、当场注册 230；输出中英双语 ONE-PAGER、FAQ、集成白皮书，支撑 BD 外联与官网转化；对接海外开发者/伙伴 100+ 场会议，促成 32 家试用、10 家 PoC、3 家长期合作。</li>
+            <li>招聘优化：（投递-筛选-约面-反馈），将面试周期压缩至 7 天，沉淀面试题库与候选人标签规则。</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">奇迹创坛</div>
+            <div class="mid">人才调研</div>
+            <div class="right">2025.01-2025.05</div>
+          </div>
+          <ul class="bullets">
+            <li>数据标注、数据清洗：收集与结构化 <span class="kpi">20,000+</span> 条目标人才数据，完成去重与字段统一；系统化上传 100% 完成。</li>
+            <li>建联人才：基于需求画像，锁定并触达 500+ 高潜候选人，达成合作 50+；沉淀“人才 mapping”SOP，支持半导体与海外医疗等跨部门项目。</li>
+            <li>负责薪资与标签的可视化标注与抽样校验，保障数据标注一致性 ≥97%、抽检错误率 ≤3%。</li>
+          </ul>
+        </div>
+
+        <div class="entry" style="margin-bottom:0;">
+          <div class="row">
+            <div class="left">爱阅-英语教培机构</div>
+            <div class="mid">英语教师</div>
+            <div class="right">2024.09-2024.12</div>
+          </div>
+          <ul class="bullets">
+            <li>负责 6-16 岁学生英语阶段性课程教学，设计趣味课堂活动（如情景对话、英文游戏）；策划并执行“万圣节英语派对”活动参与人数超 200 人，获家长满意度 100%。</li>
+            <li>所带班级学员英语成绩平均提升 25%，续课率达 90%。</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 项目经历 -->
+      <section class="card" id="proj">
+        <div class="sectionTitle">
+          <h2>项目经历</h2>
+          <div class="line"></div>
+        </div>
+
+        <div class="entry">
+          <div class="row">
+            <div class="left">中国移动创客比赛-颜探网页开发二等奖</div>
+            <div class="mid">网页开发</div>
+            <div class="right">2024.10-2024.12</div>
           </div>
         </div>
 
-        <div class="footer">© 2026 陈亭伊｜运营 / 策划 / 增长｜北京/唐山</div>
-      </aside>
+        <div class="entry">
+          <div class="row">
+            <div class="left">NCDA未来设计师大赛北京市三等奖</div>
+            <div class="mid">摄影 / 后期剪辑 / 脚本构思</div>
+            <div class="right">2025.03-至今</div>
+          </div>
+        </div>
+
+        <div class="entry" style="margin-bottom:0;">
+          <div class="row">
+            <div class="left">新媒体视域下少数民族非遗文化的创新传播与立法传承——以回族民谣文化为例</div>
+            <div class="mid">队长</div>
+            <div class="right">2023.10-2024.05</div>
+          </div>
+          <div class="subline">
+            从内容策划到制作，数据分析到运营推广我都有了一定的理论基础和扎实的实践经验。项目编号：QMRP2023110913
+          </div>
+        </div>
+
+        <div class="footer">© 2026 陈亭伊｜运营 / 策划 / 增长｜期望城市：北京/唐山</div>
+      </section>
+
     </div>
-
   </div>
+
+  <script>
+    // 进入视野渐显动效（高级感：轻微上浮+淡入）
+    const cards = document.querySelectorAll('.card');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('reveal');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    cards.forEach(c=>io.observe(c));
+
+    // 顶部导航高亮当前区域
+    const links = Array.from(document.querySelectorAll('.dock a'));
+    const map = new Map(links.map(a => [a.getAttribute('href').replace('#',''), a]));
+
+    const sections = ['edu','intern','proj'].map(id => document.getElementById(id));
+    const io2 = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(!e.isIntersecting) return;
+        links.forEach(a=>a.classList.remove('active'));
+        const id = e.target.id;
+        const hit = map.get(id);
+        if(hit) hit.classList.add('active');
+      });
+    }, { threshold: 0.45 });
+    sections.forEach(s=>io2.observe(s));
+  </script>
 </body>
 </html>
